@@ -48,3 +48,7 @@ desktop.ini
 tmp/
 temp/
 .cache/
+
+# Личные заметки
+DEV_NOTES.md
+TODO.md
