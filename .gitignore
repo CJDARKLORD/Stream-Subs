@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+ENV/
+.Python
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Inno Setup
+installer_output/
+
+# Python embedded (скачивается автоматически)
+python-embedded/
+python-embed.zip
+
+# Модели
+models/
+*.onnx
+
+# Пользовательские данные
+config.json
+whisper_log.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Логи
+*.log
+
+# Временные
+tmp/
+temp/
+.cache/

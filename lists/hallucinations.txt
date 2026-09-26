@@ -1,0 +1,52 @@
+# Типичные галлюцинации Whisper (по одной фразе на строку)
+# Эти фразы Whisper "придумывает" на тишине, шуме или коротких обрывках.
+# Регистр не важен. Строки, начинающиеся с # — комментарии.
+
+# --- Английские ---
+thank you
+thanks
+thanks for watching
+thank you for watching
+please subscribe
+subscribe
+bye
+bye bye
+okay
+you
+yeah
+hmm
+uh
+um
+good job
+well done
+see you soon
+see you next time
+this is a translation
+quiet advice
+just great
+music
+[music]
+(music)
+the end
+we'll be right back
+translate naturally
+translated by
+subtitles by
+amara.org
+subtitle
+subtitles
+
+# --- Русские ---
+продолжение следует
+спасибо за просмотр
+субтитры сделал
+субтитры подогнал
+редактор субтитров
+корректор
+до встречи
+пока
+пока-пока
+спасибо
+подписывайтесь
+подпишись
+ставьте лайк

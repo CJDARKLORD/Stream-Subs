@@ -1,0 +1,21 @@
+# Регулярные выражения (по одному на строку)
+# Регистр не важен. Строки, начинающиеся с # — комментарии.
+# Синтаксис Python regex: https://docs.python.org/3/library/re.html
+
+^translated by
+^subtitles? by
+^edited by
+^amara\.org
+^www\.
+^thank you
+\bfuck
+\bshit
+\bbitch
+^this is
+^quiet
+хуй|хуя|хую|хуё|хуе
+пизд
+бляд|блят
+ебал|ебёт|ебет|ебат|ебуч|ёбан|ебан
+пидор|пидар|пидр
+мудак|мудил

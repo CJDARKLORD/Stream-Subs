@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--
+  Stream Subs — subtitle overlay page
+  Stream Subs — страница субтитров (оверлей)
+
+  WebSocket feeds translated text. Page shows it with fade-out.
+  WebSocket передаёт переведённый текст. Страница показывает его с затуханием.
+
+  All visual settings come from /api/config.
+  Все визуальные настройки берутся из /api/config.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stream Subs</title>
+<link id="gfont" rel="stylesheet">
+<style>
+  /* Fullscreen transparent canvas / прозрачный полноэкранный холст */
+  html, body { margin:0; padding:0; background:transparent; overflow:hidden; height:100%; }
+
+  /* Subtitle block / блок субтитров */
+  #subs {
+    position: fixed; left: 50%; bottom: 80px;
+    transform: translateX(-50%);
+    max-width: 80%; text-align: center;
+    color: #ffffff; font-size: 42px; font-weight: 700; line-height: 1.25;
+    text-shadow: 0 0 8px #000, 0 0 4px #000, 2px 2px 4px #000;
+    transition: opacity 0.25s ease;
+    opacity: 0; pointer-events: none; white-space: pre-wrap;
+  }
+  #subs.visible { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="subs"></div>
+<script>
+  // URL params override / параметры URL переопределяют config.json
+  const q = new URLSearchParams(location.search);
+  const el = document.getElementById('subs');
+
+  let HIDE_TIMEOUT = 6000;   // ms after last chunk / мс после последнего куска
+  let CHUNK_TIME   = 2500;   // ms per chunk / мс на кусок
+  let MAX_CHARS    = 80;     // max chars per chunk / максимум символов
+
+  // --------------------------------------------------------
+  //  Split long text into chunks by sentences / by words
+  //  Разбиваем длинный текст на куски по предложениям / словам
+  // --------------------------------------------------------
+  function splitText(text, maxChars) {
+    const out = [];
+    const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+    for (const s of sentences) {
+      const t = s.trim();
+      if (!t) continue;
+      if (t.length <= maxChars) {
+        out.push(t);
+      } else {
+        const words = t.split(/\s+/);
+        let cur = '';
+        for (const w of words) {
+          if ((cur + ' ' + w).trim().length > maxChars && cur) {
+            out.push(cur.trim());
+            cur = w;
+          } else {
+            cur = (cur + ' ' + w).trim();
+          }
+        }
+        if (cur) out.push(cur.trim());
+      }
+    }
+    return out;
+  }
+
+  // --------------------------------------------------------
+  //  Queue of chunks / очередь кусков
+  // --------------------------------------------------------
+  let chunkQueue = [];
+  let activeTimer = null;
+  let hideTimer = null;
+
+  function enqueue(text) {
+    const chunks = splitText(text, MAX_CHARS);
+    chunkQueue.push(...chunks);
+    if (!activeTimer) nextChunk();
+  }
+
+  function nextChunk() {
+    activeTimer = null;
+    if (chunkQueue.length === 0) {
+      if (hideTimer) clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => el.classList.remove('visible'), HIDE_TIMEOUT);
+      return;
+    }
+    el.textContent = chunkQueue.shift();
+    el.classList.add('visible');
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    activeTimer = setTimeout(nextChunk, CHUNK_TIME);
+  }
+
+  // --------------------------------------------------------
+  //  Apply config (font, size, colors...) / применяем настройки
+  // --------------------------------------------------------
+  async function applyConfig(cfg) {
+    if (cfg.googleFont) {
+      const fam = cfg.googleFont.replace(/ /g, '+');
+      document.getElementById('gfont').href =
+        'https://fonts.googleapis.com/css2?family=' + fam + ':wght@400;500;600;700;800;900&display=swap';
+      try {
+        await document.fonts.load(cfg.fontWeight + ' 16px "' + cfg.googleFont + '"');
+        await document.fonts.ready;
+      } catch (e) { console.warn('font load failed / шрифт не загрузился', e); }
+      el.style.fontFamily = '"' + cfg.googleFont + '", sans-serif';
+    } else {
+      el.style.fontFamily = cfg.fontFamily;
+    }
+    el.style.fontSize = cfg.fontSize + 'px';
+    el.style.fontWeight = cfg.fontWeight;
+    el.style.color = cfg.color;
+    el.style.bottom = cfg.bottom + 'px';
+    el.style.maxWidth = cfg.maxWidth + '%';
+    el.style.textShadow = cfg.textShadow;
+    if (cfg.testBackground && cfg.testBackground !== 'transparent') {
+      document.body.style.background = cfg.testBackground;
+    }
+    HIDE_TIMEOUT = parseInt(cfg.timeout) || 6000;
+    CHUNK_TIME   = parseInt(cfg.chunkTime) || 2500;
+    MAX_CHARS    = parseInt(cfg.maxChars) || 80;
+  }
+
+  // URL params override / URL-параметры имеют приоритет
+  function applyUrlOverrides(cfg) {
+    const map = {
+      size:'fontSize', color:'color', bottom:'bottom',
+      maxw:'maxWidth', timeout:'timeout', bg:'testBackground',
+      shadow:'textShadow', family:'fontFamily', gfont:'googleFont',
+      chunk:'chunkTime', chars:'maxChars'
+    };
+    for (const [k, v] of q.entries()) {
+      if (!map[k]) continue;
+      const key = map[k];
+      if (['fontSize','bottom','maxWidth','timeout','chunkTime','maxChars'].includes(key))
+        cfg[key] = parseInt(v);
+      else cfg[key] = v;
+    }
+    return cfg;
+  }
+
+  // --------------------------------------------------------
+  //  WebSocket — auto-reconnect / автопереподключение
+  // --------------------------------------------------------
+  function connect() {
+    const ws = new WebSocket('ws://' + location.host + '/ws');
+    ws.onmessage = (ev) => {
+      try {
+        const d = JSON.parse(ev.data);
+        if (d.text) enqueue(d.text);
+      } catch (e) {}
+    };
+    ws.onclose = () => setTimeout(connect, 1000);
+    ws.onerror = () => ws.close();
+  }
+
+  // Load config then connect / загружаем настройки и подключаемся
+  fetch('/api/config')
+    .then(r => r.json())
+    .then(cfg => { applyConfig(applyUrlOverrides(cfg)); connect(); })
+    .catch(() => connect());
+</script>
+</body>
+</html>

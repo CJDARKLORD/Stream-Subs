@@ -1,0 +1,13 @@
+# Замены для мемов и сленга
+# Формат:  ключ = значение
+# Ключ — то, что вернул Whisper (в нижнем регистре, без точки).
+# Значение — то, что показываем в субтитрах.
+
+315th base = I'm 415 based
+415 base = I'm 415 based
+base 15 = based
+base = based
+i'm base = I'm based
+я база = I'm based
+silence = and in response — silence
+why don't we answer = and in response — silence

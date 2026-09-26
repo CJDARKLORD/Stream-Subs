@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<!--
+  Stream Subs — settings UI
+  Stream Subs — страница настроек
+
+  Left panel — form, right panel — live preview (iframe).
+  Слева — форма, справа — живой предпросмотр (iframe).
+  Saves to /api/config (config.json).
+  Сохраняет в /api/config (config.json).
+-->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Stream Subs — Settings / Настройки</title>
+<style>
+  * { box-sizing: border-box; }
+
+  /* Two-column layout / двухколоночный макет */
+  body {
+    margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #1e1e1e; color: #eee; height: 100vh;
+    display: grid; grid-template-columns: 420px 1fr;
+  }
+
+  /* Left panel / левая панель */
+  .panel {
+    padding: 20px; overflow-y: auto;
+    background: #252526; border-right: 1px solid #333;
+  }
+
+  /* Right panel with preview / правая панель с предпросмотром */
+  .preview { background: #1a1a1a; padding: 20px; display: flex; }
+  .preview iframe {
+    flex: 1; border: 1px solid #333; border-radius: 8px; background: #2a2a2a;
+  }
+
+  h1 { font-size: 18px; margin: 0 0 20px 0; font-weight: 600; }
+  h2 {
+    font-size: 12px; margin: 24px 0 8px 0; color: #888;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  label { display: block; font-size: 12px; margin-bottom: 4px; color: #aaa; }
+
+  input[type="text"], input[type="number"], select {
+    width: 100%; padding: 8px 10px; background: #1e1e1e; color: #eee;
+    border: 1px solid #3c3c3c; border-radius: 4px; font-size: 13px;
+    font-family: inherit;
+  }
+  input:focus, select:focus { outline: none; border-color: #007acc; }
+
+  input[type="color"] {
+    width: 100%; height: 34px; padding: 2px; background: #1e1e1e;
+    border: 1px solid #3c3c3c; border-radius: 4px; cursor: pointer;
+  }
+  input[type="range"] { width: 100%; }
+
+  .row { margin-bottom: 12px; }
+  .row-inline { display: grid; grid-template-columns: 1fr 80px; gap: 8px; }
+
+  /* Sticky action buttons / закреплённые кнопки */
+  .btns {
+    display: flex; gap: 8px; margin-top: 20px;
+    position: sticky; bottom: -20px; background: #252526;
+    padding-top: 16px; padding-bottom: 20px;
+  }
+  button {
+    flex: 1; padding: 10px; border: none; border-radius: 4px;
+    font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .primary { background: #007acc; color: white; }
+  .primary:hover { background: #1a8ad4; }
+  .secondary { background: #3c3c3c; color: #eee; }
+  .secondary:hover { background: #4a4a4a; }
+
+  .status {
+    margin-top: 10px; font-size: 12px; color: #4ec9b0;
+    text-align: center; min-height: 16px;
+  }
+  .hint { font-size: 11px; color: #666; margin-top: 4px; }
+
+  .url-box {
+    background: #1e1e1e; padding: 8px 10px;
+    border: 1px solid #3c3c3c; border-radius: 4px;
+    font-size: 11px; word-break: break-all;
+    font-family: Consolas, monospace; color: #9cdcfe; margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>🎬 Stream Subs — настройки / settings</h1>
+
+  <!-- =================================================== -->
+  <!--  Font / Шрифт                                        -->
+  <!-- =================================================== -->
+  <h2>Шрифт / Font</h2>
+
+  <div class="row">
+    <label>Google Font / Google Font</label>
+    <input id="googleFont" type="text" list="gfonts"
+           placeholder="например: Inter / e.g. Inter">
+    <datalist id="gfonts">
+      <option value="Inter"><option value="Roboto">
+      <option value="Open Sans"><option value="Montserrat">
+      <option value="Oswald"><option value="Poppins">
+      <option value="Raleway"><option value="Rubik">
+      <option value="Source Sans 3"><option value="Fira Sans">
+      <option value="Noto Sans"><option value="PT Sans">
+      <option value="Ubuntu"><option value="JetBrains Mono">
+      <option value="Roboto Mono"><option value="Tektur">
+      <option value="Orbitron"><option value="Russo One">
+      <option value="Play"><option value="Exo 2">
+    </datalist>
+    <div class="hint">
+      Возьмётся с fonts.google.com / Loaded from fonts.google.com
+    </div>
+  </div>
+
+  <div class="row">
+    <label>Системный шрифт / Fallback font</label>
+    <input id="fontFamily" type="text">
+  </div>
+
+  <div class="row">
+    <label>Размер, px / Size, px</label>
+    <div class="row-inline">
+      <input id="fontSizeRange" type="range" min="16" max="120" step="1">
+      <input id="fontSize" type="number" min="16" max="120">
+    </div>
+  </div>
+
+  <div class="row">
+    <label>Насыщенность / Weight</label>
+    <select id="fontWeight">
+      <option value="400">Regular (400)</option>
+      <option value="500">Medium (500)</option>
+      <option value="600">SemiBold (600)</option>
+      <option value="700">Bold (700)</option>
+      <option value="800">ExtraBold (800)</option>
+      <option value="900">Black (900)</option>
+    </select>
+  </div>
+
+  <!-- =================================================== -->
+  <!--  Color & position / Цвет и положение                 -->
+  <!-- =================================================== -->
+  <h2>Цвет и положение / Color &amp; position</h2>
+
+  <div class="row">
+    <label>Цвет текста / Text color</label>
+    <input id="color" type="color">
+  </div>
+
+  <div class="row">
+    <label>Отступ снизу, px / Bottom offset, px</label>
+    <input id="bottom" type="number" min="0" max="900">
+  </div>
+
+  <div class="row">
+    <label>Максимальная ширина, % / Max width, %</label>
+    <input id="maxWidth" type="number" min="20" max="100">
+  </div>
+
+  <!-- =================================================== -->
+  <!--  Behavior / Поведение                                -->
+  <!-- =================================================== -->
+  <h2>Поведение / Behavior</h2>
+
+  <div class="row">
+    <label>Сколько держать, мс / Hold time, ms</label>
+    <input id="timeout" type="number" min="1000" max="30000" step="500">
+  </div>
+
+  <div class="row">
+    <label>Максимум символов в куске / Max chars per chunk</label>
+    <input id="maxChars" type="number" min="30" max="200" step="5">
+    <div class="hint">
+      Длинные фразы будут разбиты на части / Long phrases will be split
+    </div>
+  </div>
+
+  <div class="row">
+    <label>Время одного куска, мс / Time per chunk, ms</label>
+    <input id="chunkTime" type="number" min="800" max="10000" step="100">
+  </div>
+
+  <!-- =================================================== -->
+  <!--  Appearance / Оформление                             -->
+  <!-- =================================================== -->
+  <h2>Оформление / Appearance</h2>
+
+  <div class="row">
+    <label>Тень (CSS text-shadow) / Shadow (CSS text-shadow)</label>
+    <input id="textShadow" type="text">
+  </div>
+
+  <div class="row">
+    <label>Фон для предпросмотра / Preview background</label>
+    <select id="testBackground">
+      <option value="transparent">Прозрачный / Transparent</option>
+      <option value="#222222">Тёмный / Dark</option>
+      <option value="#333333">Тёмно-серый / Dark grey</option>
+      <option value="#2a4a3a">Зелёный / Green</option>
+      <option value="#4a2a3a">Красный / Red</option>
+      <option value="#ffffff">Белый / White</option>
+    </select>
+  </div>
+
+  <!-- =================================================== -->
+  <!--  URL for Streamlabs                                  -->
+  <!-- =================================================== -->
+  <h2>URL для Streamlabs / URL for Streamlabs</h2>
+  <div class="url-box" id="urlBox">http://127.0.0.1:8000</div>
+  <div class="hint">
+    Вставьте в Browser Source, width 1920, height 1080.<br>
+    Paste into Browser Source, width 1920, height 1080.
+  </div>
+
+  <div class="btns">
+    <button class="secondary" id="resetBtn">Сброс / Reset</button>
+    <button class="primary" id="saveBtn">Сохранить / Save</button>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+
+<div class="preview">
+  <iframe id="preview" src="/"></iframe>
+</div>
+
+<script>
+  // --------------------------------------------------------
+  //  Shortcut for document.getElementById
+  //  Сокращение для document.getElementById
+  // --------------------------------------------------------
+  const $ = (id) => document.getElementById(id);
+
+  // --------------------------------------------------------
+  //  Read form values into config object
+  //  Читаем значения формы в объект конфига
+  // --------------------------------------------------------
+  function formToCfg() {
+    return {
+      googleFont:     $('googleFont').value.trim(),
+      fontFamily:     $('fontFamily').value,
+      fontSize:       parseInt($('fontSize').value),
+      fontWeight:     parseInt($('fontWeight').value),
+      color:          $('color').value,
+      bottom:         parseInt($('bottom').value),
+      maxWidth:       parseInt($('maxWidth').value),
+      timeout:        parseInt($('timeout').value),
+      maxChars:       parseInt($('maxChars').value),
+      chunkTime:      parseInt($('chunkTime').value),
+      textShadow:     $('textShadow').value,
+      testBackground: $('testBackground').value,
+    };
+  }
+
+  // --------------------------------------------------------
+  //  Fill form from config object
+  //  Заполняем форму из объекта конфига
+  // --------------------------------------------------------
+  function cfgToForm(c) {
+    $('googleFont').value     = c.googleFont || '';
+    $('fontFamily').value     = c.fontFamily || '';
+    $('fontSize').value       = c.fontSize;
+    $('fontSizeRange').value  = c.fontSize;
+    $('fontWeight').value     = c.fontWeight;
+    $('color').value          = c.color;
+    $('bottom').value         = c.bottom;
+    $('maxWidth').value       = c.maxWidth;
+    $('timeout').value        = c.timeout;
+    $('maxChars').value       = c.maxChars;
+    $('chunkTime').value      = c.chunkTime;
+    $('textShadow').value     = c.textShadow;
+    $('testBackground').value = c.testBackground;
+  }
+
+  // --------------------------------------------------------
+  //  Update URL box with current settings
+  //  Обновляем поле URL с текущими настройками
+  // --------------------------------------------------------
+  function updateUrlBox() {
+    const c = formToCfg();
+    const params = new URLSearchParams();
+    if (c.googleFont)       params.set('gfont', c.googleFont);
+    if (c.color && c.color !== '#ffffff') params.set('color', c.color);
+    if (c.fontSize && c.fontSize !== 42)  params.set('size', c.fontSize);
+    if (c.bottom && c.bottom !== 80)      params.set('bottom', c.bottom);
+    if (c.maxChars && c.maxChars !== 80)  params.set('chars', c.maxChars);
+    if (c.chunkTime && c.chunkTime !== 2500) params.set('chunk', c.chunkTime);
+    const qs = params.toString();
+    $('urlBox').textContent = 'http://127.0.0.1:8000' + (qs ? '?' + qs : '');
+  }
+
+  // --------------------------------------------------------
+  //  Reload preview iframe (with cache-buster)
+  //  Перезагружаем iframe предпросмотра (с обходом кэша)
+  // --------------------------------------------------------
+  function reloadPreview() {
+    const bg = $('testBackground').value;
+    const params = new URLSearchParams();
+    if (bg && bg !== 'transparent') params.set('bg', bg);
+    params.set('_', Date.now());  // cache-buster / обход кэша
+    $('preview').src = '/?' + params.toString();
+  }
+
+  // --------------------------------------------------------
+  //  Live updates / живые обновления
+  // --------------------------------------------------------
+  $('fontSizeRange').addEventListener('input',
+    () => $('fontSize').value = $('fontSizeRange').value);
+  $('fontSize').addEventListener('input',
+    () => $('fontSizeRange').value = $('fontSize').value);
+  $('testBackground').addEventListener('change', reloadPreview);
+  document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('change', updateUrlBox);
+    el.addEventListener('input', updateUrlBox);
+  });
+
+  // --------------------------------------------------------
+  //  Save / Сохранить
+  // --------------------------------------------------------
+  $('saveBtn').addEventListener('click', async () => {
+    const cfg = formToCfg();
+    await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cfg),
+    });
+    $('status').textContent = '✓ Сохранено / Saved';
+    setTimeout(() => $('status').textContent = '', 2000);
+    reloadPreview();
+    updateUrlBox();
+  });
+
+  // --------------------------------------------------------
+  //  Reset / Сброс
+  // --------------------------------------------------------
+  $('resetBtn').addEventListener('click', async () => {
+    if (!confirm('Сбросить все настройки?\nReset all settings?')) return;
+    const r = await fetch('/api/config/reset', { method: 'POST' });
+    const j = await r.json();
+    cfgToForm(j.config);
+    reloadPreview();
+    updateUrlBox();
+    $('status').textContent = '✓ Сброшено / Reset';
+    setTimeout(() => $('status').textContent = '', 2000);
+  });
+
+  // --------------------------------------------------------
+  //  Initial load / первичная загрузка
+  // --------------------------------------------------------
+  fetch('/api/config').then(r => r.json()).then(c => {
+    cfgToForm(c);
+    reloadPreview();
+    updateUrlBox();
+  });
+</script>
+</body>
+</html>
