@@ -43,7 +43,7 @@
 
 ### Готовый установщик (рекомендуется)
 
-1. Скачайте **StreamSubsSetup.exe** со страницы **Releases**.
+1. Скачайте **StreamSubsSetup.exe** со страницы [Releases](https://github.com/CJDARKLORD/Stream-Subs/releases/latest).
 2. Запустите установщик.
 3. Следуйте инструкциям. Установка занимает 1–2 минуты.
 4. **При первом запуске** программа скачает ~4 ГБ компонентов:
@@ -62,17 +62,14 @@
 
 ### Сборка из исходников
 
-~~~~
-git clone https://github.com/CJDARKLORD/Stream-Subs.git
-cd Stream-Subs
+Откройте терминал и выполните:
 
-py -3.11 -m venv .venv
-.venv\Scripts\activate
-
-pip install -r requirements.txt
-
-python main.py
-~~~~
+- `git clone https://github.com/CJDARKLORD/Stream-Subs.git`
+- `cd Stream-Subs`
+- `py -3.11 -m venv .venv`
+- `.venv\Scripts\activate`
+- `pip install -r requirements.txt`
+- `python main.py`
 
 **Требования для сборки:** Python 3.11+, PyInstaller, Inno Setup 6.
 
@@ -96,7 +93,7 @@ python main.py
 
 **3. Попросить автора собрать CPU-версию.**
 
-Если не хотите возиться со сборкой — создайте **Issue** с заголовком **«Request: CPU build»**. Автор выложит готовый CPU-инсталлятор в **Releases**, если наберётся достаточное количество запросов.
+Если не хотите возиться со сборкой — создайте [Issue](https://github.com/CJDARKLORD/Stream-Subs/issues) с заголовком **«Request: CPU build»**. Автор выложит готовый CPU-инсталлятор в Releases, если наберётся достаточное количество запросов.
 
 ---
 
@@ -123,7 +120,9 @@ python main.py
 
 ### Редактирование списков слов
 
-Все списки лежат в папке установки `C:\Users\<ваше_имя>\AppData\Local\Programs\StreamSubs\lists\`:
+Все списки лежат в папке установки:
+
+`C:\Users\<ваше_имя>\AppData\Local\Programs\StreamSubs\lists\`
 
 - `banned_words.txt` — запрещённые слова
 - `hallucinations.txt` — типичные галлюцинации Whisper
@@ -169,6 +168,20 @@ python main.py
 - **Мемы и сленг.** Whisper может переводить «я база» как `base 15`. Часть лечится через `slang.txt`, но не всё.
 - **Галлюцинации на тишине.** Whisper иногда выдаёт `Thank you`, `Bye`, `Silence` на шум. Фильтр отсекает 99%, но идеала нет.
 - **Задержка.** Минимум 0.5 секунды из-за ожидания тишины (VAD) + Whisper. Для настоящих «live» субтитров нужно потоковое распознавание, но это заметно ухудшает качество.
+
+---
+
+## 💖 Поддержать проект
+
+Stream Subs — бесплатный проект с открытым исходным кодом, который делается в свободное время. Если он помогает вашим стримам — можно поддержать разработку:
+
+- 💰 [**DonationAlerts**](https://www.donationalerts.com/r/cjdarklord) — разовый донат
+- 🎁 [**ODA Digital**](https://cjdarklord.oda.digital/) — альтернативный вариант
+- 💎 [**TON-кошелёк**](https://tonscan.org/address/UQC4_jNOa2xfv75n-95cluaN7P4HJ3Lk00b_p1xvn1tGDKYx) — открыть в tonscan и скопировать адрес
+- ❤️ [**GitHub Sponsors**](https://github.com/sponsors/CJDARKLORD) — подписка через GitHub
+- ⭐ [**Звезда на GitHub**](https://github.com/CJDARKLORD/Stream-Subs) — тоже поддержка
+
+Каждая копейка идёт на развитие проекта: новые функции, тестирование, поддержка пользователей.
 
 ---
 
