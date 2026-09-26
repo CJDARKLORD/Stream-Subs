@@ -39,6 +39,20 @@
 
 ---
 
+---
+
+## 📸 Скриншоты
+
+| ![Установщик](assets/installer.png) | ![Bootstrap](assets/bootstrap.png) |
+| :---: | :---: |
+| Установщик Inno Setup | Загрузка компонентов (bootstrap) |
+
+| ![Субтитры в игре](assets/subtitles.png) | ![Настройки](assets/settings.png) |
+| :---: | :---: |
+| Субтитры в OBS / Streamlabs | Веб-интерфейс настроек |
+
+---
+
 ## 📥 Установка
 
 ### Готовый установщик (рекомендуется)

@@ -39,6 +39,20 @@ Microphone → VAD → Whisper (ru→en) → WebSocket → Browser → OBS/Strea
 
 ---
 
+---
+
+## 📸 Screenshots
+
+| ![Installer](assets/installer.png) | ![Bootstrap](assets/bootstrap.png) |
+| :---: | :---: |
+| Inno Setup installer | Component download (bootstrap) |
+
+| ![Subtitles in game](assets/subtitles.png) | ![Settings](assets/settings.png) |
+| :---: | :---: |
+| Subtitles in OBS / Streamlabs | Web settings UI |
+
+---
+
 ## 📥 Installation
 
 ### Ready installer (recommended)
